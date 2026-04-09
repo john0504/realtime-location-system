@@ -6,6 +6,7 @@ import (
 	"realtime-location/internal/service"
 	"realtime-location/internal/websocket"
 	"realtime-location/pkg/db"
+	"realtime-location/pkg/redis"
 
 	"github.com/joho/godotenv"
 
@@ -16,6 +17,11 @@ func main() {
 	godotenv.Load()
 	db.Init()
 	db.InitTables()
+
+	redis.Init()
+
+	ws := &websocket.WSNotifier{}
+	service.SetNotifier(ws)
 
 	r := gin.Default()
 
@@ -28,7 +34,4 @@ func main() {
 	}
 
 	r.Run(":" + port)
-
-	ws := &websocket.WSNotifier{}
-	service.SetNotifier(ws)
 }

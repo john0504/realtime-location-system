@@ -18,11 +18,15 @@ var ctx = context.Background()
 func UpdatePlayerLocation(playerID string, lat, lng float64) {
 
 	// 1. 存入 Redis GEO
-	redis.Client.GeoAdd(ctx, "players", &redis2.GeoLocation{
+	err := redis.Client.GeoAdd(ctx, "players", &redis2.GeoLocation{
 		Name:      playerID,
 		Latitude:  lat,
 		Longitude: lng,
-	})
+	}).Err()
+
+	if err != nil {
+		return
+	}
 
 	// 2. 查詢附近玩家 (300m)
 	players, _ := redis.Client.GeoRadius(ctx, "players", lng, lat, &redis2.GeoRadiusQuery{
@@ -41,7 +45,9 @@ func UpdatePlayerLocation(playerID string, lat, lng float64) {
 	}
 
 	// 4. 廣播
-	notifier.Broadcast(playerID, lat, lng, targets)
+	if notifier != nil {
+		notifier.Broadcast(playerID, lat, lng, targets)
+	}
 
 	CheckLandmarks(playerID, lat, lng)
 }
