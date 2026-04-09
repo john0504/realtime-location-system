@@ -30,8 +30,13 @@ func main() {
 	db.DB.Exec(`
 	INSERT INTO landmarks (name, latitude, longitude, radius)
 	VALUES 
-	('台中火車站', 24.1367, 120.6850, 300)
-	ON CONFLICT DO NOTHING;
+	('台中火車站', 24.1367, 120.6850, 300),
+	('逢甲夜市', 24.1789, 120.6465, 300)
+	ON CONFLICT (name) 
+	DO UPDATE SET 
+		latitude = EXCLUDED.latitude,
+		longitude = EXCLUDED.longitude,
+		radius = EXCLUDED.radius;
 	`)
 
 	ws := &websocket.WSNotifier{}
