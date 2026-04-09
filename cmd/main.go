@@ -1,17 +1,19 @@
 package main
 
 import (
+	"os"
 	"realtime-location/internal/handler"
 	"realtime-location/internal/service"
 	"realtime-location/internal/websocket"
 	"realtime-location/pkg/db"
 
-	"os"
+	"github.com/joho/godotenv"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	godotenv.Load()
 	db.Init()
 	ws := &websocket.WSNotifier{}
 	service.SetNotifier(ws)
